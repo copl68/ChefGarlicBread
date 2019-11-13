@@ -1,3 +1,5 @@
+import random
+
 import arcade
 
 
@@ -15,17 +17,22 @@ class ChefGarlicBread(arcade.Window):
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
         self.frog1 = None
         self.frog2 = None
+        self.frog2 = None
 
     def setup(self):
         """ Setup the game (or reset the game) """
         arcade.set_background_color(BACKGROUND_COLOR)
         self.frog1 = arcade.Sprite('images/frog1.png')
+        self.frog1.position = (random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT))
         self.frog2 = arcade.Sprite('images/frog2.png')
-        self.frog2.postion = (200, 200)
+        self.frog2.position = (random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT))
+        self.frog3 = arcade.Sprite('images/frog3.png')
+        self.frog3.position = (random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT))
 
     def on_draw(self):
         """ Called when it is time to draw the world """
         arcade.start_render()
+        self.frog1.draw()
         self.frog2.draw()
 
     def on_update(self, delta_time):
