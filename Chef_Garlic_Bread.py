@@ -1,4 +1,4 @@
-import random
+from tkinter import *
 
 import arcade
 
@@ -16,7 +16,7 @@ class TitleLogo(arcade.Sprite):
         self.center_x = WINDOW_WIDTH/2
         self.top = 485
 
-class ChefGarlicBread(arcade.Window):
+class SelectPlayer(arcade.Window):
     def __init__(self):
         """ Initialize variables """
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
@@ -26,6 +26,8 @@ class ChefGarlicBread(arcade.Window):
         self.frog4 = None
         self.frog5 = None
         self.title = None
+        self.current_page = None
+        self.pages = None
 
     def setup(self):
         """ Setup the game (or reset the game) """
@@ -53,21 +55,30 @@ class ChefGarlicBread(arcade.Window):
         self.frogs.append(self.frog5)
         self.title = TitleLogo()
 
-
-
     def on_draw(self):
         """ Called when it is time to draw the world """
         arcade.start_render()
         self.frogs.draw()
         self.title.draw()
-        arcade.draw_text("~ Choose your player ~", WINDOW_WIDTH/2, 370, arcade.color.WHITE, 25, font_name="calibri", anchor_x="center")
+        arcade.draw_text("~ Choose your player ~", WINDOW_WIDTH/2, 370, arcade.color.WHITE, 25, font_name="impact", anchor_x="center")
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if:
+            pass
+        elif:
+            pass
+        elif:
+            pass
+        elif:
+            pass
+        elif:
+            pass
 
     def on_update(self, delta_time):
         """ Called every frame of the game (1/GAME_SPEED times per second)"""
 
-
 def main():
-    window = ChefGarlicBread()
+    window = SelectPlayer()
     window.setup()
     arcade.run()
 
