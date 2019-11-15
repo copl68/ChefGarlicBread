@@ -1,23 +1,25 @@
 import arcade
 
-
 # Define constants
 WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 500
 BACKGROUND_COLOR = arcade.color.OLD_BURGUNDY
 GAME_TITLE = "Chef Garlic Bread"
-GAME_SPEED = 1/60
+GAME_SPEED = 1 / 60
+
 
 class TitleLogo(arcade.Sprite):
     def __init__(self):
         super().__init__('images/chefgarlicbread.PNG', .6)
-        self.center_x = WINDOW_WIDTH/2
+        self.center_x = WINDOW_WIDTH / 2
         self.top = 485
+
 
 class SelectPlayer(arcade.Window):
     def __init__(self):
         """ Initialize variables """
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
+        self.frogs = None
         self.frog1 = None
         self.frog2 = None
         self.frog3 = None
@@ -60,25 +62,27 @@ class SelectPlayer(arcade.Window):
         arcade.start_render()
         self.frogs.draw()
         self.title.draw()
-        arcade.draw_text("~ Choose your player ~", WINDOW_WIDTH/2, 370, arcade.color.WHITE, 25, font_name="impact", anchor_x="center")
+        arcade.draw_text("~ Choose your player ~", WINDOW_WIDTH / 2, 370, arcade.color.WHITE, 25, font_name="impact",
+                         anchor_x="center")
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if self.frogs[0].collides_with_point([x,y]):
+        if self.frogs[0].collides_with_point([x, y]):
             self.chosenFrog = self.frogs[0]
-        elif self.frogs[1].collides_with_point([x,y]):
+        elif self.frogs[1].collides_with_point([x, y]):
             self.chosenFrog = self.frogs[1]
-        elif self.frogs[2].collides_with_point([x,y]):
+        elif self.frogs[2].collides_with_point([x, y]):
             self.chosenFrog = self.frogs[2]
-        elif self.frogs[3].collides_with_point([x,y]):
+        elif self.frogs[3].collides_with_point([x, y]):
             self.chosenFrog = self.frogs[3]
-        elif self.frogs[4].collides_with_point([x,y]):
+        elif self.frogs[4].collides_with_point([x, y]):
             self.chosenFrog = self.frogs[4]
 
-        self.window = GroceryStore(self.chosenFrog)
-        self.window.setup()
+        # self.window = GroceryStore(self.chosenFrog)
+        # self.window.setup()
 
     def on_update(self, delta_time):
         """ Called every frame of the game (1/GAME_SPEED times per second)"""
+
 
 class GroceryStore(arcade.Window):
     def __init__(self, frog):
@@ -93,6 +97,7 @@ class GroceryStore(arcade.Window):
 
     def on_update(self, delta_time):
         pass
+
 
 def main():
     window = SelectPlayer()
