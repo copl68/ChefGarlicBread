@@ -77,8 +77,8 @@ class SelectPlayer(arcade.Window):
         elif self.frogs[4].collides_with_point([x, y]):
             self.chosenFrog = self.frogs[4]
 
-        # self.window = GroceryStore(self.chosenFrog)
-        # self.window.setup()
+        self.window = GroceryStore(self.chosenFrog)
+        self.window.setup()
 
     def on_update(self, delta_time):
         """ Called every frame of the game (1/GAME_SPEED times per second)"""
