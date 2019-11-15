@@ -1,5 +1,3 @@
-from tkinter import *
-
 import arcade
 
 
@@ -28,6 +26,8 @@ class SelectPlayer(arcade.Window):
         self.title = None
         self.current_page = None
         self.pages = None
+        self.chosenFrog = None
+        self.window = None
 
     def setup(self):
         """ Setup the game (or reset the game) """
@@ -63,19 +63,36 @@ class SelectPlayer(arcade.Window):
         arcade.draw_text("~ Choose your player ~", WINDOW_WIDTH/2, 370, arcade.color.WHITE, 25, font_name="impact", anchor_x="center")
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if:
-            pass
-        elif:
-            pass
-        elif:
-            pass
-        elif:
-            pass
-        elif:
-            pass
+        if self.frogs[0].collides_with_point([x,y]):
+            self.chosenFrog = self.frogs[0]
+        elif self.frogs[1].collides_with_point([x,y]):
+            self.chosenFrog = self.frogs[1]
+        elif self.frogs[2].collides_with_point([x,y]):
+            self.chosenFrog = self.frogs[2]
+        elif self.frogs[3].collides_with_point([x,y]):
+            self.chosenFrog = self.frogs[3]
+        elif self.frogs[4].collides_with_point([x,y]):
+            self.chosenFrog = self.frogs[4]
+
+        self.window = GroceryStore(self.chosenFrog)
+        self.window.setup()
 
     def on_update(self, delta_time):
         """ Called every frame of the game (1/GAME_SPEED times per second)"""
+
+class GroceryStore(arcade.Window):
+    def __init__(self, frog):
+        super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
+        self.frog = frog
+
+    def setup(self):
+        arcade.set_background_color(BACKGROUND_COLOR)
+
+    def on_draw(self):
+        arcade.start_render()
+
+    def on_update(self, delta_time):
+        pass
 
 def main():
     window = SelectPlayer()
