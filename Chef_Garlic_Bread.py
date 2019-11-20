@@ -15,10 +15,10 @@ class TitleLogo(arcade.Sprite):
         self.top = 485
 
 
-class SelectPlayer(arcade.Window):
+class StartView(arcade.View):
     def __init__(self):
         """ Initialize variables """
-        super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
+        super().__init__()
         self.frogs = None
         self.frog1 = None
         self.frog2 = None
@@ -31,7 +31,7 @@ class SelectPlayer(arcade.Window):
         self.chosenFrog = None
         self.window = None
 
-    def setup(self):
+    def on_show(self):
         """ Setup the game (or reset the game) """
         arcade.set_background_color(BACKGROUND_COLOR)
         self.frogs = arcade.SpriteList()
@@ -77,31 +77,35 @@ class SelectPlayer(arcade.Window):
         elif self.frogs[4].collides_with_point([x, y]):
             self.chosenFrog = self.frogs[4]
 
-        self.window = GroceryStore(self.chosenFrog)
-        self.window.setup()
+        store = GroceryStore(self.chosenFrog)
+        self.window.show_view(store)
 
     def on_update(self, delta_time):
         """ Called every frame of the game (1/GAME_SPEED times per second)"""
 
 
-class GroceryStore(arcade.Window):
+class GroceryStore(arcade.View):
     def __init__(self, frog):
-        super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
+        super().__init__()
         self.frog = frog
+        self.background = None
 
-    def setup(self):
-        arcade.set_background_color(BACKGROUND_COLOR)
+    def on_show(self):
+        self.background = arcade.load_texture("images/floor1.jpg")
 
     def on_draw(self):
         arcade.start_render()
+        self.frog.draw()
+        arcade.draw_texture_rectangle(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
 
     def on_update(self, delta_time):
         pass
 
 
 def main():
-    window = SelectPlayer()
-    window.setup()
+    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
+    start_view = StartView()
+    window.show_view(start_view)
     arcade.run()
 
 
