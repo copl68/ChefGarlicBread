@@ -1,4 +1,8 @@
 import arcade
+from arcade.geometry import check_for_collision_with_list
+from arcade.geometry import check_for_collision
+from arcade.sprite import Sprite
+from arcade.buffered_draw_commands import ShapeElementList
 
 # Define constants
 WINDOW_WIDTH = 600
@@ -6,6 +10,7 @@ WINDOW_HEIGHT = 500
 BACKGROUND_COLOR = arcade.color.OLD_BURGUNDY
 GAME_TITLE = "Chef Garlic Bread"
 GAME_SPEED = 1 / 60
+PLAYER_SPEED = 5
 
 
 class TitleLogo(arcade.Sprite):
@@ -88,19 +93,65 @@ class GroceryStore(arcade.View):
     def __init__(self, frog):
         super().__init__()
         self.frog = frog
-        self.background = None
+        self.background = arcade.load_texture("images/floor1.jpg")
+        self.player_list = arcade.SpriteList()
+        self.player_list.append(self.frog)
+        self.player_list.rescale(.2)
+        self.shelves = arcade.ShapeElementList()
+        self.shelves.append(arcade.create_rectangle_filled(100, 100, 50, 50, arcade.color.BLACK))
+        self.physics_engine = PhysicsEngineSimple_shapes(self.frog, self.shelves)
+
 
     def on_show(self):
-        self.background = arcade.load_texture("images/floor1.jpg")
+        pass
 
     def on_draw(self):
         arcade.start_render()
-        self.frog.draw()
         arcade.draw_texture_rectangle(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
+        self.shelves.draw()
+        '''
+        arcade.draw_lrtb_rectangle_filled(20, 60, 360, 200, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(80, 120, 360, 200, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(140, 180, 360, 200, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(200, 240, 360, 200, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(260, 340, 360, 200, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(360, 400, 360, 200, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(420, 460, 360, 200, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(480, 520, 360, 200, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(540, 580, 360, 200, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(20, 200, 180, 140, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(220, 380, 180, 140, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(400, 580, 180, 140, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(20, 200, 120, 80, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(220, 380, 120, 80, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(400, 580, 120, 80, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(20, 200, 60, 20, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(220, 380, 60, 20, arcade.color.BLACK)
+        arcade.draw_lrtb_rectangle_filled(400, 580, 60, 20, arcade.color.BLACK)
+        self.frog.draw()
+'''
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.UP:
+            self.player_list[0].change_y = PLAYER_SPEED
+        elif key == arcade.key.DOWN:
+            self.frog.change_y = -PLAYER_SPEED
+        elif key == arcade.key.LEFT:
+            self.frog.change_x = -PLAYER_SPEED
+        elif key == arcade.key.RIGHT:
+            self.frog.change_x = PLAYER_SPEED
+
+    def on_key_release(self, key, modifiers):
+        if key == arcade.key.UP:
+            self.frog.change_y = 0
+        elif key == arcade.key.DOWN:
+            self.frog.change_y = 0
+        elif key == arcade.key.LEFT:
+            self.frog.change_x = 0
+        elif key == arcade.key.RIGHT:
+            self.frog.change_x = 0
 
     def on_update(self, delta_time):
         pass
-
 
 def main():
     window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
@@ -108,6 +159,65 @@ def main():
     window.show_view(start_view)
     arcade.run()
 
+class PhysicsEngineSimple_shapes:
+    """
+    This class will move everything, and take care of collisions.
+    """
+
+    def __init__(self, player_sprite: Sprite, walls: ShapeElementList):
+        """
+        Constructor.
+        """
+        assert(isinstance(player_sprite, Sprite))
+        assert(isinstance(walls, ShapeElementList))
+        self.player_sprite = player_sprite
+        self.walls = walls
+
+    def update(self):
+        """
+        Move everything and resolve collisions.
+        """
+        # --- Move in the x direction
+        self.player_sprite.center_x += self.player_sprite.change_x
+
+        # Check for wall hit
+        hit_list = \
+            check_for_collision_with_list(self.player_sprite,
+                                          self.walls)
+
+        # If we hit a wall, move so the edges are at the same point
+        if len(hit_list) > 0:
+            if self.player_sprite.change_x > 0:
+                for item in hit_list:
+                    self.player_sprite.right = min(item.left,
+                                                   self.player_sprite.right)
+            elif self.player_sprite.change_x < 0:
+                for item in hit_list:
+                    self.player_sprite.left = max(item.right,
+                                                  self.player_sprite.left)
+            else:
+                print("Error, collision while player wasn't moving.")
+
+        # --- Move in the y direction
+        self.player_sprite.center_y += self.player_sprite.change_y
+
+        # Check for wall hit
+        hit_list = \
+            check_for_collision_with_list(self.player_sprite,
+                                          self.walls)
+
+        # If we hit a wall, move so the edges are at the same point
+        if len(hit_list) > 0:
+            if self.player_sprite.change_y > 0:
+                for item in hit_list:
+                    self.player_sprite.top = min(item.bottom,
+                                                 self.player_sprite.top)
+            elif self.player_sprite.change_y < 0:
+                for item in hit_list:
+                    self.player_sprite.bottom = max(item.top,
+                                                    self.player_sprite.bottom)
+            else:
+                print("Error, collision while player wasn't moving.")
 
 if __name__ == "__main__":
     main()
