@@ -6,26 +6,26 @@ WINDOW_HEIGHT = 500
 BACKGROUND_COLOR = arcade.color.OLD_BURGUNDY
 GAME_TITLE = "Chef Garlic Bread"
 GAME_SPEED = 1 / 60
-PLAYER_SPEED = 5
+PLAYER_SPEED = 3.5
 SHELF_COLOR = arcade.color.BLACK
-SHELF_COORDS = [[40, 280, 40, 160],
-                 [100, 280, 40, 160],
-                 [160, 280, 40, 160],
-                 [220, 280, 40, 160],
-                 [300, 280, 80, 160],
-                 [380, 280, 40, 160],
-                 [440, 280, 40, 160],
-                 [500, 280, 40, 160],
-                 [560, 280, 40, 160],
-                 [110, 160, 180, 40],
-                 [110, 100, 180, 40],
-                 [110, 40, 180, 40],
-                 [300, 160, 160, 40],
-                 [300, 100, 160, 40],
-                 [300, 40, 60, 40],
-                 [490, 160, 180, 40],
-                 [490, 100, 180, 40],
-                 [490, 40, 180, 40]]
+SHELF_COORDS = [[40, 290, 40, 140],
+                 [100, 290, 40, 140],
+                 [160, 290, 40, 140],
+                 [220, 290, 40, 140],
+                 [300, 290, 80, 140],
+                 [380, 290, 40, 140],
+                 [440, 290, 40, 140],
+                 [500, 290, 40, 140],
+                 [560, 290, 40, 140],
+                 [110, 170, 180, 20],
+                 [110, 110, 180, 20],
+                 [110, 50, 180, 20],
+                 [300, 170, 160, 20],
+                 [300, 110, 160, 20],
+                 [300, 50, 160, 20],
+                 [490, 170, 180, 20],
+                 [490, 110, 180, 20],
+                 [490, 50, 180, 20]]
 
 class TitleLogo(arcade.Sprite):
     def __init__(self):
@@ -101,27 +101,28 @@ class StartView(arcade.View):
     def on_update(self, delta_time):
         """ Called every frame of the game (1/GAME_SPEED times per second)"""
 
-class Shelf(arcade.Sprite):
-    def __init__(self, x_center, y_center, width, height):
-        super().__init__()
-        self.texture = arcade.create_rectangle_filled(x_center, y_center, width, height, SHELF_COLOR)
-
 class GroceryStore(arcade.View):
     def __init__(self, frog):
         super().__init__()
         self.frog = frog
         self.frog.center_x = 300
         self.frog.center_y = 450
+        self.frog.width = 17
+        self.frog.height = 38
         self.background = arcade.load_texture("images/floor1.jpg")
         self.player_list = arcade.SpriteList()
         self.player_list.append(self.frog)
-        self.player_list.rescale(.2)
         self.shelves = arcade.SpriteList()
-        #self.physics_engine = arcade.PhysicsEngineSimple(self.frog, self.shelves)
+        self.physics_engine = arcade.PhysicsEngineSimple(self.frog, self.shelves)
 
     def on_show(self):
         for shelf in SHELF_COORDS:
-            self.shelves.append(Shelf(shelf[0], shelf[1], shelf[2], shelf[3]))
+            self.shelf_img = arcade.Sprite('images/black.jpg')
+            self.shelf_img.center_x = shelf[0]
+            self.shelf_img.center_y = shelf[1]
+            self.shelf_img.width = shelf[2]
+            self.shelf_img.height = shelf[3]
+            self.shelves.append(self.shelf_img)
 
     def on_draw(self):
         arcade.start_render()
@@ -150,8 +151,7 @@ class GroceryStore(arcade.View):
             self.frog.change_x = 0
 
     def on_update(self, delta_time):
-        pass
-        #self.physics_engine.update()
+        self.physics_engine.update()
 
 def main():
     window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
