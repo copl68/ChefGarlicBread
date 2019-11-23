@@ -1,4 +1,5 @@
 import arcade
+import random
 
 # Define constants
 WINDOW_WIDTH = 600
@@ -26,6 +27,26 @@ SHELF_COORDS = [[40, 290, 40, 140],
                  [490, 170, 180, 20],
                  [490, 110, 180, 20],
                  [490, 50, 180, 20]]
+POSSIBLE_INGREDIENT_LOCATION = [[10, 300],
+                       [70, 300],
+                       [130, 300],
+                       [190, 300],
+                       [250, 300],
+                       [350, 300],
+                       [410, 300],
+                       [470, 300],
+                       [530, 300],
+                       [590, 300],
+                       [120, 140],
+                       [120, 80],
+                       [120, 20],
+                       [300, 140],
+                       [300, 80],
+                       [300, 20],
+                       [480, 140],
+                       [480, 80],
+                       [480, 20]]
+INGREDIENT_LIST = ["Garlic", "Butter", "Bread", "Parsley", "Parmesan"]
 
 class TitleLogo(arcade.Sprite):
     def __init__(self):
@@ -114,6 +135,10 @@ class GroceryStore(arcade.View):
         self.player_list.append(self.frog)
         self.shelves = arcade.SpriteList()
         self.physics_engine = arcade.PhysicsEngineSimple(self.frog, self.shelves)
+        self.ingredient_coords = []
+        self.ingredient_coord_location = []
+        self.matched_ingredient_coords = {}
+        self.stuff = arcade.SpriteList()
 
     def on_show(self):
         for shelf in SHELF_COORDS:
@@ -123,12 +148,49 @@ class GroceryStore(arcade.View):
             self.shelf_img.width = shelf[2]
             self.shelf_img.height = shelf[3]
             self.shelves.append(self.shelf_img)
+        self.ingredient_coord_location = random.sample(range(0, 19), 5)
+        for x in self.ingredient_coord_location:
+            self.ingredient_coords.append(POSSIBLE_INGREDIENT_LOCATION[x])
+
+        self.matched_ingredient_coords = self.place_foods(self.ingredient_coords)
+
+
+        self.one = arcade.Sprite("images/black.jpg", .1)
+        self.one.center_x = self.matched_ingredient_coords["Garlic"][0]
+        self.one.center_y = self.matched_ingredient_coords["Garlic"][1]
+        self.stuff.append(self.one)
+        self.two = arcade.Sprite("images/black.jpg", .1)
+        self.two.center_x = self.matched_ingredient_coords["Butter"][0]
+        self.two.center_y = self.matched_ingredient_coords["Butter"][1]
+        self.stuff.append(self.two)
+        self.three = arcade.Sprite("images/black.jpg", .1)
+        self.three.center_x = self.matched_ingredient_coords["Bread"][0]
+        self.three.center_y = self.matched_ingredient_coords["Bread"][1]
+        self.stuff.append(self.three)
+        self.four = arcade.Sprite("images/black.jpg", .1)
+        self.four.center_x = self.matched_ingredient_coords["Parsley"][0]
+        self.four.center_y = self.matched_ingredient_coords["Parsley"][1]
+        self.stuff.append(self.four)
+        self.five = arcade.Sprite("images/black.jpg", .1)
+        self.five.center_x = self.matched_ingredient_coords["Parmesan"][0]
+        self.five.center_y = self.matched_ingredient_coords["Parmesan"][1]
+        self.stuff.append(self.five)
+
+
+    def place_foods(self, ingredient_coords):
+        matched_ingredient_coords = {}
+        i = 0
+        for x in INGREDIENT_LIST:
+            matched_ingredient_coords["{}".format(x)] = ingredient_coords[i]
+            i += 1
+        return matched_ingredient_coords
 
     def on_draw(self):
         arcade.start_render()
         arcade.draw_texture_rectangle(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
         self.shelves.draw()
         self.frog.draw()
+        self.stuff.draw()
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.UP:
@@ -152,6 +214,23 @@ class GroceryStore(arcade.View):
 
     def on_update(self, delta_time):
         self.physics_engine.update()
+        for x in INGREDIENT_LIST:
+            if self.frog.collides_with_point(self.matched_ingredient_coords["{}".format(x)]):
+                view = Found_Food()
+                self.window.show_view(view)
+
+class Found_Food(arcade.View):
+    def __init__(self):
+        super().__init__()
+
+    def on_show(self):
+        self.box = arcade.create_rectangle_filled(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, WINDOW_WIDTH-200, WINDOW_HEIGHT-200, arcade.color.WHITE)
+
+    def on_draw(self):
+        self.box.draw()
+
+    def on_update(self, delta_time):
+        pass
 
 def main():
     window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
