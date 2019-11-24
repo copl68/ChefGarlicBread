@@ -139,7 +139,6 @@ class GroceryStore(arcade.View):
         self.ingredient_coords = []
         self.ingredient_coord_location = []
         self.matched_ingredient_coords = {}
-        self.popups = arcade.ShapeElementList()
         self.stuff = arcade.SpriteList()
         self.ABC = 5
 
@@ -156,6 +155,28 @@ class GroceryStore(arcade.View):
             self.ingredient_coords.append(POSSIBLE_INGREDIENT_LOCATION[x])
 
         self.matched_ingredient_coords = self.place_foods(self.ingredient_coords)
+
+        self.collected_foods = arcade.SpriteList()
+        self.garlic = arcade.Sprite("images/Garlic.png", .2)
+        self.garlic.center_x = (WINDOW_WIDTH/10)*1
+        self.garlic.center_y = 435
+        self.collected_foods.append(self.garlic)
+        self.bread = arcade.Sprite("images/bread_loaf.png", .15)
+        self.bread.center_x = (WINDOW_WIDTH/10)*3
+        self.bread.center_y = 435
+        self.collected_foods.append(self.bread)
+        self.butter = arcade.Sprite("images/butter.png", .35)
+        self.butter.center_x = (WINDOW_WIDTH/10)*5
+        self.butter.center_y = 435
+        self.collected_foods.append(self.butter)
+        self.parsley = arcade.Sprite("images/parsley.png", .17)
+        self.parsley.center_x = (WINDOW_WIDTH/10)*7
+        self.parsley.center_y = 443
+        self.collected_foods.append(self.parsley)
+        self.parmesan = arcade.Sprite("images/parmesan.png", .17)
+        self.parmesan.center_x = (WINDOW_WIDTH/10)*9
+        self.parmesan.center_y = 435
+        self.collected_foods.append(self.parmesan)
 
         if self.ABC == 5:
             self.one = arcade.Sprite("images/black.jpg", .1)
@@ -195,8 +216,9 @@ class GroceryStore(arcade.View):
         self.frog.draw()
         self.stuff.draw()
         arcade.draw_rectangle_filled(300, 450, WINDOW_WIDTH, 100, arcade.color.APRICOT)
-        arcade.draw_text("Foods Collected:", 20, 480, arcade.color.BLACK, 15, font_name="impact", anchor_x="left", anchor_y="center")
-        arcade.draw_text(str(self.matched_ingredient_coords), 10, 450, arcade.color.RED)
+        arcade.draw_text("Foods Collected:", 20, 485, arcade.color.BLACK, 20, font_name="impact", anchor_x="left", anchor_y="center")
+        self.collected_foods.draw()
+        arcade.draw_text(str(self.matched_ingredient_coords), 10, 390, arcade.color.RED)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.UP:
@@ -256,6 +278,16 @@ class Found_Food(arcade.View):
             self.window.show_view(self.game_view)
 
     def on_update(self, delta_time):
+        pass
+
+class Assemble(arcade.View):
+    def __init__(self):
+        super().__init__()
+
+    def on_show(self):
+        pass
+
+    def on_draw(self):
         pass
 
 def main():
