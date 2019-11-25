@@ -117,8 +117,12 @@ class StartView(arcade.View):
         elif self.frogs[4].collides_with_point([x, y]):
             self.chosenFrog = self.frogs[4]
 
+        assemble = Assemble()
+        self.window.show_view(assemble)
+        '''
         store = GroceryStore(self.chosenFrog)
         self.window.show_view(store)
+        '''
 
     def on_update(self, delta_time):
         """ Called every frame of the game (1/GAME_SPEED times per second)"""
@@ -285,10 +289,42 @@ class Assemble(arcade.View):
         super().__init__()
 
     def on_show(self):
-        pass
+        arcade.set_background_color(arcade.color.OLD_BURGUNDY)
+        self.recipe = arcade.Sprite("images/Recipe.JPG", .5)
+        self.recipe.center_x = 120
+        self.recipe.center_y = 175
+        self.recipe.height = 325
+
+        self.collected_foods = arcade.SpriteList()
+        self.garlic = arcade.Sprite("images/Garlic.png", .2)
+        self.garlic.center_x = (WINDOW_WIDTH / 10) * 1
+        self.garlic.center_y = 400
+        self.collected_foods.append(self.garlic)
+        self.bread = arcade.Sprite("images/bread_loaf.png", .15)
+        self.bread.center_x = (WINDOW_WIDTH / 10) * 3
+        self.bread.center_y = 400
+        self.collected_foods.append(self.bread)
+        self.butter = arcade.Sprite("images/butter.png", .35)
+        self.butter.center_x = (WINDOW_WIDTH / 10) * 5
+        self.butter.center_y = 400
+        self.collected_foods.append(self.butter)
+        self.parsley = arcade.Sprite("images/parsley.png", .17)
+        self.parsley.center_x = (WINDOW_WIDTH / 10) * 7
+        self.parsley.center_y = 408
+        self.collected_foods.append(self.parsley)
+        self.parmesan = arcade.Sprite("images/parmesan.png", .17)
+        self.parmesan.center_x = (WINDOW_WIDTH / 10) * 9
+        self.parmesan.center_y = 400
+        self.collected_foods.append(self.parmesan)
+        self.collected_foods.center_y = 420
 
     def on_draw(self):
-        pass
+        arcade.start_render()
+        arcade.draw_rectangle_filled(WINDOW_WIDTH/2, 425, WINDOW_WIDTH, 150, arcade.color.APRICOT)
+        self.recipe.draw()
+        self.collected_foods.draw()
+        arcade.draw_text("Following the recipe, click and drag items into \nthe box to assemble the garlic bread", 300, 447, arcade.color.BLACK, 20,
+                         anchor_x="center", align="center", font_name="impact")
 
 def main():
     window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
