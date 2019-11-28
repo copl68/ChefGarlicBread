@@ -1,31 +1,22 @@
- '''
-        for x in NOT_FOUND_INGREDIENTS:
-            if self.frog.collides_with_point(self.matched_ingredient_coords["{}".format(x)]) and self.food_deleted == False:
-                self.frog.change_x = 0
-                self.frog.change_y = 0
-                NOT_FOUND_INGREDIENTS.remove("{}".format(x))
-                del self.matched_ingredient_coords["{}".format(x)]
-                popup_view = Found_Food(self, self.matched_ingredient_coords)
-                self.window.show_view(popup_view)
-                self.food_deleted = True
-
-class Found_Food(arcade.View):
-    def __init__(self, game_view, UGH):
-        super().__init__()
-        self.game_view = game_view
-        self.UGH = UGH
-
-    def on_show(self):
-        self.box = arcade.create_rectangle_filled(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, WINDOW_WIDTH-200, WINDOW_HEIGHT-200, arcade.color.WHITE)
-
-    def on_draw(self):
-        self.box.draw()
-        arcade.draw_text(str(self.UGH), 50, 220, arcade.color.RED)
-
-    def on_key_press(self, key, modifiers):
-        if key == arcade.key.ENTER:
-            self.window.show_view(self.game_view)
-
-    def on_update(self, delta_time):
-        pass
-'''
+if self.FirstSetup:
+    self.one = arcade.Sprite("images/black.jpg", .1)
+    self.one.center_x = self.matched_ingredient_coords["garlic"][0]
+    self.one.center_y = self.matched_ingredient_coords["garlic"][1]
+    self.stuff.append(self.one)
+    self.two = arcade.Sprite("images/black.jpg", .1)
+    self.two.center_x = self.matched_ingredient_coords["butter"][0]
+    self.two.center_y = self.matched_ingredient_coords["butter"][1]
+    self.stuff.append(self.two)
+    self.three = arcade.Sprite("images/black.jpg", .1)
+    self.three.center_x = self.matched_ingredient_coords["bread"][0]
+    self.three.center_y = self.matched_ingredient_coords["bread"][1]
+    self.stuff.append(self.three)
+    self.four = arcade.Sprite("images/black.jpg", .1)
+    self.four.center_x = self.matched_ingredient_coords["parsley"][0]
+    self.four.center_y = self.matched_ingredient_coords["parsley"][1]
+    self.stuff.append(self.four)
+    self.five = arcade.Sprite("images/black.jpg", .1)
+    self.five.center_x = self.matched_ingredient_coords["parmesan"][0]
+    self.five.center_y = self.matched_ingredient_coords["parmesan"][1]
+    self.stuff.append(self.five)
+self.FirstSetup = False
