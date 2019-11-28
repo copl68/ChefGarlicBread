@@ -116,10 +116,7 @@ class StartView(arcade.View):
             self.chosenFrog = self.frogs[3]
         elif self.frogs[4].collides_with_point([x, y]):
             self.chosenFrog = self.frogs[4]
-        '''
-        assemble = Assemble()
-        self.window.show_view(assemble)
-        '''
+
         store = GroceryStore(self.chosenFrog)
         self.window.show_view(store)
 
@@ -134,7 +131,7 @@ class GroceryStore(arcade.View):
         self.frog.center_x = 300
         self.frog.center_y = 200
         self.frog.width = 17
-        self.frog.height = 38
+        self.frog.height = 37
         self.background = arcade.load_texture("images/floor1.jpg")
         self.player_list = arcade.SpriteList()
         self.player_list.append(self.frog)
@@ -148,6 +145,7 @@ class GroceryStore(arcade.View):
         self.stuff = arcade.SpriteList()
 
     def on_show(self):
+        print(self.matched_ingredient_coords)
         if self.FirstSetup:
             for shelf in SHELF_COORDS:
                 self.shelf_img = arcade.Sprite('images/black.jpg')
@@ -183,6 +181,7 @@ class GroceryStore(arcade.View):
             self.parmesan.center_x = (WINDOW_WIDTH/10)*9
             self.parmesan.center_y = 435
             self.food_sprites.append(self.parmesan)
+            self.FirstSetup = False
 
     def place_foods(self, ingredient_coords):
         matched_ingredient_coords = {}
