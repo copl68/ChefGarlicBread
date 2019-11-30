@@ -1,5 +1,6 @@
 import arcade
 import random
+import pymunk
 
 # Define constants
 WINDOW_WIDTH = 600
@@ -7,7 +8,7 @@ WINDOW_HEIGHT = 500
 BACKGROUND_COLOR = arcade.color.OLD_BURGUNDY
 GAME_TITLE = "Chef Garlic Bread"
 GAME_SPEED = 1 / 60
-PLAYER_SPEED = 3.5
+PLAYER_SPEED = 4
 SHELF_COLOR = arcade.color.BLACK
 SHELF_COORDS = [[40, 290, 40, 140],
                  [100, 290, 40, 140],
@@ -117,9 +118,12 @@ class StartView(arcade.View):
         elif self.frogs[4].collides_with_point([x, y]):
             self.chosenFrog = self.frogs[4]
 
+        view = Assemble()
+        self.window.show_view(view)
+        '''
         store = GroceryStore(self.chosenFrog)
         self.window.show_view(store)
-
+        '''
 
     def on_update(self, delta_time):
         """ Called every frame of the game (1/GAME_SPEED times per second)"""
@@ -145,7 +149,9 @@ class GroceryStore(arcade.View):
         self.stuff = arcade.SpriteList()
 
     def on_show(self):
-        print(self.matched_ingredient_coords)
+        if len(self.collected_foods) == 5:
+            next_view = Assemble()
+            self.window.show_view(next_view)
         if self.FirstSetup:
             for shelf in SHELF_COORDS:
                 self.shelf_img = arcade.Sprite('images/black.jpg')
@@ -281,6 +287,17 @@ class Found_Food(arcade.View):
 class Assemble(arcade.View):
     def __init__(self):
         super().__init__()
+        # Used for dragging shapes around with the mouse
+        self.shape_being_dragged = None
+        self.last_mouse_position = None
+
+        self.draw_time = 0
+        self.processing_time = 0
+
+        # -- Pymunk
+        self.space = pymunk.Space()
+        self.space.iterations = 35
+        self.space.gravity = (0.0, -900.0)
 
     def on_show(self):
         arcade.set_background_color(arcade.color.OLD_BURGUNDY)
@@ -319,6 +336,41 @@ class Assemble(arcade.View):
         self.collected_foods.draw()
         arcade.draw_text("Following the recipe, click and drag items into \nthe box to assemble the garlic bread", 300, 447, arcade.color.BLACK, 20,
                          anchor_x="center", align="center", font_name="impact")
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            # See if we clicked on anything
+            for food in self.collected_foods:
+                if food.collides_with_point([x, y]):
+                    self.shape_being_dragged = food
+                    break
+            '''
+            # If we did, remember what we clicked on
+            if len(shape_list) > 0:
+                self.shape_being_dragged = shape_list[0]
+            '''
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            # Release the item we are holding (if any)
+            self.shape_being_dragged = None
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        if self.shape_being_dragged is not None:
+            # If we are holding an object, move it with the mouse
+            #self.last_mouse_position = x, y
+            center_x = self.shape_being_dragged.center_x
+            center_y = self.shape_being_dragged.center_y
+            self.shape_being_dragged.center_x = center_x + dx
+            self.shape_being_dragged.center_y = center_y + dy
+            #self.shape_being_dragged.shape.body.velocity = dx * 20, dy * 20
+
+    def on_update(self, delta_time):
+        '''
+        if self.shape_being_dragged is not None:
+            self.shape_being_dragged.shape.body.position = self.last_mouse_position
+            self.shape_being_dragged.shape.body.velocity = 0, 0
+        '''
 
 def main():
     window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_TITLE)
