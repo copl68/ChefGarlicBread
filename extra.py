@@ -1,4 +1,4 @@
-if self.FirstSetup:
+'''if self.FirstSetup:
     self.one = arcade.Sprite("images/black.jpg", .1)
     self.one.center_x = self.matched_ingredient_coords["garlic"][0]
     self.one.center_y = self.matched_ingredient_coords["garlic"][1]
@@ -20,3 +20,4 @@ if self.FirstSetup:
     self.five.center_y = self.matched_ingredient_coords["parmesan"][1]
     self.stuff.append(self.five)
 self.FirstSetup = False
+'''
