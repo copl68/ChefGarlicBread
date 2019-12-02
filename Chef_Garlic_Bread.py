@@ -1,6 +1,5 @@
 import arcade
 import random
-import pymunk
 
 # Define constants
 WINDOW_WIDTH = 600
@@ -9,6 +8,7 @@ BACKGROUND_COLOR = arcade.color.OLD_BURGUNDY
 GAME_TITLE = "Chef Garlic Bread"
 GAME_SPEED = 1 / 60
 PLAYER_SPEED = 4
+SCROLLING_MARGIN = 100
 SHELF_COLOR = arcade.color.BLACK
 SHELF_COORDS = [[40, 290, 40, 140],
                  [100, 290, 40, 140],
@@ -122,12 +122,32 @@ class StartView(arcade.View):
         view = Eat(self.chosenFrog)
         self.window.show_view(view)
         '''
-        store = GroceryStore(self.chosenFrog)
+        store = GroceryStoreInstructions(self.chosenFrog)
         self.window.show_view(store)
 
 
     def on_update(self, delta_time):
         """ Called every frame of the game (1/GAME_SPEED times per second)"""
+
+class GroceryStoreInstructions(arcade.View):
+    def __init__(self, frog):
+        super().__init__()
+        self.background_color = arcade.color.APRICOT
+        self.frog = frog
+
+    def on_show(self):
+        arcade.set_background_color(self.background_color)
+
+    def on_draw(self):
+        arcade.start_render()
+        arcade.draw_text("Use the arrow keys to \n search the grocery store for \n the needed ingredients", WINDOW_WIDTH/2,
+                         300, arcade.color.BLACK, 40, anchor_x="center", anchor_y="center", align="center", font_name="impact")
+        arcade.draw_text("Press <ENTER> to start", WINDOW_WIDTH/2, 150, arcade.color.RED, 25, anchor_x="center", font_name="impact")
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.ENTER:
+            store = GroceryStore(self.frog)
+            self.window.show_view(store)
 
 class GroceryStore(arcade.View):
     def __init__(self, frog):
@@ -135,7 +155,7 @@ class GroceryStore(arcade.View):
         self.frog = frog
         self.frog.center_x = 300
         self.frog.center_y = 200
-        self.frog.width = 17
+        self.frog.width = 16
         self.frog.height = 37
         self.frog.boundary_left = 0
         self.frog.boundary_right = WINDOW_WIDTH
@@ -151,7 +171,8 @@ class GroceryStore(arcade.View):
         self.matched_ingredient_coords = {}
         self.FirstSetup = True
         self.collected_foods = arcade.SpriteList()
-        self.stuff = arcade.SpriteList()
+        self.view_left = 0
+        self.view_bottom = 0
 
     def on_show(self):
         if len(self.collected_foods) == 5:
@@ -207,7 +228,6 @@ class GroceryStore(arcade.View):
         arcade.draw_texture_rectangle(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, WINDOW_WIDTH, WINDOW_HEIGHT, self.background)
         self.shelves.draw()
         self.frog.draw()
-        self.stuff.draw()
         arcade.draw_rectangle_filled(300, 450, WINDOW_WIDTH, 100, arcade.color.APRICOT)
         arcade.draw_text("Foods Collected:", 20, 485, arcade.color.BLACK, 20, font_name="impact", anchor_x="left", anchor_y="center")
         self.collected_foods.draw()
@@ -234,18 +254,19 @@ class GroceryStore(arcade.View):
 
     def on_update(self, delta_time):
         self.physics_engine.update()
-        '''
-        USE BOUNDARY_LEFT TYPE ATTRIBUTES
-        
-        if self.frog.left < 0:
+        if self.frog.left < self.frog.boundary_left:
             self.frog.change_x = 0
-        if self.frog.bottom < 0:
+            self.frog.left = self.frog.boundary_left
+        if self.frog.bottom < self.frog.boundary_bottom:
             self.frog.change_y = 0
-        if self.frog.right > WINDOW_WIDTH:
+            self.frog.bottom = self.frog.boundary_bottom
+        if self.frog.right > self.frog.boundary_right:
             self.frog.change_x = 0
-        if self.frog.top > WINDOW_HEIGHT - 100:
+            self.frog.right = self.frog.boundary_right
+        if self.frog.top > self.frog.boundary_top:
             self.frog.change_y = 0
-        '''
+            self.frog.top = self.frog.boundary_top
+
         for food in NOT_FOUND_INGREDIENTS:
             if self.frog.collides_with_point(self.matched_ingredient_coords[food]):
                 self.frog.change_x = 0
@@ -264,6 +285,70 @@ class GroceryStore(arcade.View):
                     self.collected_foods.append(self.parsley)
                 elif food == "parmesan":
                     self.collected_foods.append(self.parmesan)
+
+        '''
+        window_left = self.frog.center_x - 100
+        window_right = self.frog.center_x + 100
+        window_bottom = self.frog.center_y - 100
+        window_top = self.frog.center_y + 100
+        left = 0
+        right = 0
+        bottom = 0
+        top = 0
+        if window_left > 0 and window_right < WINDOW_WIDTH and window_bottom > 0 and window_top < WINDOW_HEIGHT:
+            arcade.set_viewport(window_left, window_right, window_bottom, window_top)
+        else:
+            if window_left < 0:
+                left = 0
+                right = 200
+                #arcade.set_viewport(0, 200, window_bottom, window_top)
+            elif window_right > WINDOW_WIDTH:
+                left = WINDOW_WIDTH - 200
+                right = WINDOW_WIDTH
+                #arcade.set_viewport(WINDOW_WIDTH - 200, WINDOW_WIDTH, window_bottom, window_top)
+            if window_bottom < 0:
+                bottom = 0
+                top = 200
+                #arcade.set_viewport(window_right, window_left, 0, 200)
+            elif window_top > WINDOW_HEIGHT:
+                bottom = WINDOW_HEIGHT - 200
+                top = WINDOW_HEIGHT
+                #arcade.set_viewport(window_right, window_left, WINDOW_HEIGHT - 200, WINDOW_HEIGHT)
+            arcade.set_viewport(left, right, bottom, top)
+
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        changed = False
+
+        left_boundary = self.view_left + SCROLLING_MARGIN
+        if self.frog.left < left_boundary:
+            self.view_left -= left_boundary - self.frog.left
+            changed = True
+
+        right_boundary = self.view_left + WINDOW_WIDTH - SCROLLING_MARGIN
+        if self.frog.right > right_boundary:
+            self.view_left += self.frog.right - right_boundary
+            changed = True
+
+        top_boundary = self.view_bottom + WINDOW_HEIGHT - SCROLLING_MARGIN
+        if self.frog.top > top_boundary:
+            self.view_bottom += self.frog.top - top_boundary
+            changed = True
+
+        bottom_boundary = self.view_bottom + SCROLLING_MARGIN
+        if self.frog.bottom < bottom_boundary:
+            self.view_bottom -= bottom_boundary - self.frog.bottom
+            changed = True
+
+        self.view_left = int(self.view_left)
+        self.view_bottom = int(self.view_bottom)
+
+        
+        if changed:
+            arcade.set_viewport(self.view_left,
+                                WINDOW_WIDTH + self.view_left - 1,
+                                self.view_bottom,
+                                WINDOW_HEIGHT + self.view_bottom - 1)
+        '''
 
 class Found_Food(arcade.View):
     def __init__(self, game_view, food):
@@ -300,14 +385,6 @@ class Assemble(arcade.View):
         self.shape_being_dragged = None
         self.last_mouse_position = None
 
-        self.draw_time = 0
-        self.processing_time = 0
-
-        # -- Pymunk
-        self.space = pymunk.Space()
-        self.space.iterations = 35
-        self.space.gravity = (0.0, -900.0)
-
         self.foi = None
         self.bread_to_draw = None
         self.mouse_released = None
@@ -316,6 +393,8 @@ class Assemble(arcade.View):
         self.bread_scale = .25
         self.made = False
         self.frog = frog
+        self.first_run = True
+        self.collected_foods = arcade.SpriteList()
 
     def on_show(self):
         arcade.set_background_color(arcade.color.OLD_BURGUNDY)
@@ -324,29 +403,7 @@ class Assemble(arcade.View):
         self.recipe.center_y = 175
         self.recipe.height = 325
 
-        self.collected_foods = arcade.SpriteList()
-        self.garlic = arcade.Sprite("images/garlic.png", .2)
-        self.garlic.center_x = (WINDOW_WIDTH / 10) * 1
-        self.garlic.center_y = 400
-        self.bread = arcade.Sprite("images/bread.png", .15)
-        self.bread.center_x = (WINDOW_WIDTH / 10) * 3
-        self.bread.center_y = 400
-        self.butter = arcade.Sprite("images/butter.png", .35)
-        self.butter.center_x = (WINDOW_WIDTH / 10) * 5
-        self.butter.center_y = 400
-        self.parsley = arcade.Sprite("images/parsley.png", .17)
-        self.parsley.center_x = (WINDOW_WIDTH / 10) * 7
-        self.parsley.center_y = 408
-        self.parmesan = arcade.Sprite("images/parmesan.png", .17)
-        self.parmesan.center_x = (WINDOW_WIDTH / 10) * 9
-        self.parmesan.center_y = 400
-
-        self.collected_foods.append(self.bread)
-        self.collected_foods.append(self.butter)
-        self.collected_foods.append(self.garlic)
-        self.collected_foods.append(self.parsley)
-        self.collected_foods.append(self.parmesan)
-        self.collected_foods.center_y = 420
+        self.create_ingredient_bar()
 
         self.plate = arcade.Sprite("images/plate.png", .5)
         self.plate.center_x = 400
@@ -364,6 +421,7 @@ class Assemble(arcade.View):
                                   self.bread3: self.bread4,
                                   self.bread4: self.bread5,
                                   self.bread5: self.bread5}
+        self.first_run = False
 
     def on_draw(self):
         arcade.start_render()
@@ -417,8 +475,39 @@ class Assemble(arcade.View):
                 if self.foi.left >= 300 and self.foi.right <= 500 and self.foi.top < 320 and self.foi.bottom > 200:
                     self.bread_to_draw = self.bread_progression[self.bread_to_draw]
                     self.collected_foods.remove(self.foi)
+                else:
+                    self.create_ingredient_bar()
         elif not self.collected_foods:
             self.made = True
+
+    def create_ingredient_bar(self):
+        if self.first_run == True:
+            self.garlic = arcade.Sprite("images/garlic.png", .2)
+            self.bread = arcade.Sprite("images/bread.png", .15)
+            self.butter = arcade.Sprite("images/butter.png", .35)
+            self.parsley = arcade.Sprite("images/parsley.png", .17)
+            self.parmesan = arcade.Sprite("images/parmesan.png", .17)
+            self.collected_foods.append(self.bread)
+            self.collected_foods.append(self.butter)
+            self.collected_foods.append(self.garlic)
+            self.collected_foods.append(self.parsley)
+            self.collected_foods.append(self.parmesan)
+        if len(self.collected_foods) >= 1:
+            self.parmesan.center_x = (WINDOW_WIDTH / 10) * 9
+            self.parmesan.center_y = 400
+            if len(self.collected_foods) >= 2:
+                self.parsley.center_x = (WINDOW_WIDTH / 10) * 7
+                self.parsley.center_y = 408
+                if len(self.collected_foods) >= 3:
+                    self.garlic.center_x = (WINDOW_WIDTH / 10) * 1
+                    self.garlic.center_y = 400
+                    if len(self.collected_foods) >= 4:
+                        self.butter.center_x = (WINDOW_WIDTH / 10) * 5
+                        self.butter.center_y = 400
+                        if len(self.collected_foods) >= 5:
+                            self.bread.center_x = (WINDOW_WIDTH / 10) * 3
+                            self.bread.center_y = 400
+        self.collected_foods.center_y = 420
 
 class Eat(arcade.View):
     def __init__(self, frog):
