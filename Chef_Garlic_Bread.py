@@ -173,6 +173,7 @@ class GroceryStore(arcade.View):
         self.collected_foods = arcade.SpriteList()
         self.view_left = 0
         self.view_bottom = 0
+        self.NOT_FOUND_INGREDIENTS_COPY = NOT_FOUND_INGREDIENTS
 
     def on_show(self):
         if len(self.collected_foods) == 5:
@@ -267,11 +268,11 @@ class GroceryStore(arcade.View):
             self.frog.change_y = 0
             self.frog.top = self.frog.boundary_top
 
-        for food in NOT_FOUND_INGREDIENTS:
+        for food in self.NOT_FOUND_INGREDIENTS_COPY:
             if self.frog.collides_with_point(self.matched_ingredient_coords[food]):
                 self.frog.change_x = 0
                 self.frog.change_y = 0
-                NOT_FOUND_INGREDIENTS.remove(food)
+                self.NOT_FOUND_INGREDIENTS_COPY.remove(food)
                 del self.matched_ingredient_coords[food]
                 popup_view = Found_Food(self, food)
                 self.window.show_view(popup_view)
