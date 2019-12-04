@@ -160,7 +160,7 @@ class GroceryStore(arcade.View):
         self.frog = frog
         self.frog.center_x = 300
         self.frog.center_y = 200
-        self.frog.width = 16
+        self.frog.width = 15
         self.frog.height = 37
         self.frog.boundary_left = 0
         self.frog.boundary_right = WINDOW_WIDTH
