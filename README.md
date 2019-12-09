@@ -1,8 +1,8 @@
-# Chef Garlic Bread
-###Concept
-The player shops for ingredients then makes and
+ # Chef Garlic Bread
+ ### Concept
+ The player shops for ingredients then makes and
  eats their own cheesy garlic bread. 
- ###About
+ ### About
  The game starts in in a player selection screen, where 
  the player clicks to choose their character. The game 
  progresses to an instructions screen. Once the player 
@@ -15,9 +15,9 @@ The player shops for ingredients then makes and
  a recipe. Once the garlic bread is made, the player get 
  to eat the garlic bread by pressing the space bar and 
  can restart the game if they so choose. 
- ###Preview
+ ### Preview
  [Gameplay demo](https://youtu.be/VVbu9BxXShw)
- ###Installation
+ ### Installation
  Before gameplay, install the requirements.txt file using:
  ```
  > pip install -r requirements.txt
@@ -26,10 +26,10 @@ Then, run the game using:
 ```
 > python Chef_Garlic_Bread.py
 ```
-###Instructions
+### Instructions
 Gameplay instructions are included throughout the game.
-###Author
+### Author
 **Name:** Cole Plum \
 **E-mail:** cplum@udel.edu
-###Acknowledements
+### Acknowledements
 http://arcade.academy/index.html
